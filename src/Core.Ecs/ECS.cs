@@ -81,6 +81,21 @@ public class World
         }
     }
 
+    public IEnumerable<(EntityId entityId, T1 comp1, T2 comp2, T3 comp3)> Query<T1, T2, T3>()
+        where T1 : IComponent
+        where T2 : IComponent
+        where T3 : IComponent
+    {
+        var pool1 = GetOrCreatePool<T1>().GetAll();
+        foreach (var (entityId, comp1) in pool1)
+        {
+            if (HasComponent<T2>(entityId) && HasComponent<T3>(entityId))
+            {
+                yield return (entityId, comp1, GetComponent<T2>(entityId), GetComponent<T3>(entityId));
+            }
+        }
+    }
+
 
 
 }

@@ -55,4 +55,7 @@ public struct Rec : IComponent{
         Width = width;
         Height = height;
     }
+
+    public Rectangle GetRec(Vector2 pos) => new(pos, Width, Height);
+    public Rectangle GetRec(Transform t) => new(t.Pos, Width, Height);
 }

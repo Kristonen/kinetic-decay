@@ -22,5 +22,4 @@ public struct Movement : IComponent{
         Dir = dir;
         Speed = speed;
     }
-
 }

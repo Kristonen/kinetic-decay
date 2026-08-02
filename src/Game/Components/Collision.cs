@@ -1,4 +1,6 @@
 using System.Numerics;
+using Core.Ecs;
+using Raylib_cs;
 
 public enum ShapeType
 {
@@ -10,7 +12,7 @@ public enum PhysicsType
     Dynamic, Static, Kinmetic
 }
 
-public struct PhysicsBody
+public struct PhysicsBody : IComponent
 {
     public ShapeType Shape;
     public PhysicsType Type;
@@ -35,11 +37,16 @@ public struct PhysicsBody
     {
         return new()
         {
-            Shape = ShapeType.Circle,
+            Shape = ShapeType.Rectangle,
             Width = width,
             Height = height,
             Restitution = restitution,
             Type = type,
         };
     }
+
+    public Rectangle GetRec(Transform t) => new(t.Pos + Offset, Width, Height);
+    public Rectangle GetRec(Vector2 pos) => new(pos + Offset, Width, Height);
+    public Vector2 GetCirPos(Transform t) => t.Pos + Offset;
+    public Vector2 GetCirPos(Vector2 pos) => pos + Offset;
 }
