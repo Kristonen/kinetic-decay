@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Core.Ecs/Core.Ecs.csproj" />
+    <Project Path="src/Game/Game.csproj" />
+  </Folder>
+</Solution>
