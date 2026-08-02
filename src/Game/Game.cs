@@ -39,23 +39,19 @@ namespace Game
         public void GameLoop()
         {
             var test = _world.CreateEntity();
-            Transform transform = new(){
-                Pos = new(200, 200),
-                Rotation = 0,
-                Scale = new(1, 1)
-            };
-            Circle circle = new()
-            {
-                Radius = 50,
-                Color = Color.Red,
-            };
-            _world.AddComponent(test, transform);
-            _world.AddComponent(test, circle);
+            _world.AddComponent(test, new Transform(200, 200));
+            _world.AddComponent(test, new Circle(50, Color.Red));
             _world.AddComponent(test, new Movement { Dir = new(1, 1), Speed = 200 });
 
             var otherTest = _world.CreateEntity();
-            _world.AddComponent(otherTest, new Transform { Pos = new(800, 500), Rotation = 0, Scale = new(1, 1) });
-            _world.AddComponent(otherTest, new Rec { Width = 250, Height = 125, Color = Color.Orange });
+            _world.AddComponent(otherTest, new Transform(800 ,500));
+            _world.AddComponent(otherTest, new Rec(250, 125, Color.Orange));
+
+            var nextTest = _world.CreateEntity();
+            _world.AddComponent(nextTest, new Transform(RL.GetScreenWidth() / 2 - 50, RL.GetScreenHeight()));
+            _world.AddComponent(nextTest, new Rec(100, 50, Color.Beige));
+            _world.AddComponent(nextTest, new Movement(new(0, -1), 200));
+
             while (!RL.WindowShouldClose())
             {
                 float dt = RL.GetFrameTime();
@@ -63,6 +59,7 @@ namespace Game
                 RL.BeginDrawing();
                 RL.ClearBackground(Color.DarkGray);
                 _renderer.Draw();
+                RL.DrawFPS(25, 25);
                 RL.EndDrawing();
             }
         }

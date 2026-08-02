@@ -32,26 +32,13 @@ public class RenderSystem : AbstractRenderSystem
 
     public override void Draw()
     {
-        var circleEntities = _world.Query<Circle>();
-
-        foreach (var (entity, circle) in circleEntities)
+        foreach (var (_, transform, cir) in _world.Query<Transform, Circle>())
         {
-            if (_world.HasComponent<Transform>(entity))
-            {
-                ref var transform = ref _world.GetComponent<Transform>(entity);
-                RL.DrawCircleV(transform.Pos, circle.Radius, circle.Color);
-            }
+            RL.DrawCircleV(transform.Pos, cir.Radius, cir.Color);
         }
 
-        var recEntities = _world.Query<Rec>();
-
-        foreach (var (entity, rec) in recEntities)
-        {
-            if (_world.HasComponent<Transform>(entity))
-            {
-                ref var transform = ref _world.GetComponent<Transform>(entity);
-                RL.DrawRectangleRec(GetRectangle(transform, rec), rec.Color);
-            }
+        foreach(var (_, transform, rec) in _world.Query<Transform, Rec>()){
+            RL.DrawRectangleRec(GetRectangle(transform, rec), rec.Color);
         }
     }
 

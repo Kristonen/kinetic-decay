@@ -67,6 +67,22 @@ public class World
         return GetOrCreatePool<T>().GetAll();
     }
 
+    public IEnumerable<(EntityId entityId, T1 comp1, T2 comp2)> Query<T1, T2>()
+        where T1 : IComponent
+        where T2 : IComponent
+    {
+        var pool1 = GetOrCreatePool<T1>().GetAll();
+        foreach (var (entityId, comp1) in pool1)
+        {
+            if (HasComponent<T2>(entityId))
+            {
+                yield return (entityId, comp1, GetComponent<T2>(entityId));
+            }
+        }
+    }
+
+
+
 }
 
 public interface IComponentPool

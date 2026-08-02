@@ -7,12 +7,36 @@ public struct Transform : IComponent
     public Vector2 Pos;
     public int Rotation;
     public Vector2 Scale;
+
+    public Transform(Vector2 pos)
+    {
+        Pos = pos;
+        Rotation = 0;
+        Scale = new(1, 1);
+    }
+
+    public Transform(float x, float y)
+    {
+        Pos = new(x, y);
+    }
 }
 
 public struct Circle : IComponent
 {
     public float Radius;
     public Color Color;
+
+    public Circle(float radius, Color color)
+    {
+        Radius = radius;
+        Color = color;
+    }
+
+    public Circle(float radius)
+    {
+        Radius = radius;
+        Color = Color.White;
+    }
 }
 
 public struct Rec : IComponent{

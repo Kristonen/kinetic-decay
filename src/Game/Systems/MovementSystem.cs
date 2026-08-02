@@ -33,15 +33,10 @@ public class MovementSystem : AbstractUpdateSystem
 
     public override void Update(float dt)
     {
-        var moveEntities = _world.Query<Movement>();
-
-        foreach (var (entity, move) in moveEntities)
+        foreach (var (entityId, _, move) in _world.Query<Transform, Movement>())
         {
-            if (_world.HasComponent<Transform>(entity))
-            {
-                ref var transform = ref _world.GetComponent<Transform>(entity);
-                transform.Pos += move.Dir * move.Speed * dt;
-            }
+            ref var transform = ref _world.GetComponent<Transform>(entityId);
+            transform.Pos += move.Dir * move.Speed * dt;
         }
     }
 }
