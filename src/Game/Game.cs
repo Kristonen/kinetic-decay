@@ -19,20 +19,21 @@ namespace Game
         private GameState()
         {
             InitGame();
-        }
 
-        private List<EntityId> _entities;
+            _world = new();
+            _renderer = new();
+            _renderer.Add(new RenderSystem(_world));
+            _updater = new();
+            _updater.Add(new MovementSystem(_world));
+        }
         private World _world;
-        private RenderSystem _renderSystem;
-        private MovementSystem _moveSystem;
+
+        private RenderPipeline _renderer;
+        private UpdatePipeline _updater;
 
         public void InitGame()
         {
             RL.InitWindow(1920, 1080, "Test");
-            _entities = new();
-            _world = new();
-            _renderSystem = new(_world);
-            _moveSystem = new(_world);
         }
 
         public void GameLoop()
@@ -58,10 +59,10 @@ namespace Game
             while (!RL.WindowShouldClose())
             {
                 float dt = RL.GetFrameTime();
-                _moveSystem.Move(dt);
+                _updater.Update(dt);
                 RL.BeginDrawing();
                 RL.ClearBackground(Color.DarkGray);
-                _renderSystem.Draw();
+                _renderer.Draw();
                 RL.EndDrawing();
             }
         }

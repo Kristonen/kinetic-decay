@@ -1,18 +1,41 @@
 using Core.Ecs;
 
-public class MovementSystem{
+public class UpdatePipeline
+{
+    private readonly List<AbstractUpdateSystem> _systems = new();
 
-    private World _world;
+    public void Add(AbstractUpdateSystem system) => _systems.Add(system);
 
-    public MovementSystem(World world)
+    public void Update(float dt)
+    {
+        for (int i = 0; i < _systems.Count; i++)
+        {
+            _systems[i].Update(dt);
+        }
+    }
+}
+
+public abstract class AbstractUpdateSystem
+{
+    protected World _world;
+    public AbstractUpdateSystem(World world)
     {
         _world = world;
     }
 
-    public void Move(float dt){
+    public abstract void Update(float dt);
+}
+
+public class MovementSystem : AbstractUpdateSystem
+{
+
+    public MovementSystem(World world) : base(world){}
+
+    public override void Update(float dt)
+    {
         var moveEntities = _world.Query<Movement>();
 
-        foreach(var (entity, move) in moveEntities)
+        foreach (var (entity, move) in moveEntities)
         {
             if (_world.HasComponent<Transform>(entity))
             {
