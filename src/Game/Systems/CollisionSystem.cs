@@ -56,15 +56,39 @@ public abstract class AbstractCollisionSystem
 
 public class SimpleCollision : AbstractCollisionSystem
 {
+    private readonly SpatialGrid _grid = new();
+    private readonly HashSet<(EntityId, EntityId)> _checkedPairs = new();
     public SimpleCollision(World world) : base(world) { }
 
     public override void Collision(float dt)
     {
+        _grid.Clear();
+        _checkedPairs.Clear();
+        var entities = _world.Query<Transform, PhysicsBody>();
+
+        foreach (var (e, t, b) in entities)
+        {
+            _grid.Insert(e, t, b);
+        }
+
+        Game.GameState.Game.Grid = _grid;
+
         foreach (var (e1, t1, b1) in _world.Query<Transform, PhysicsBody>())
         {
-            foreach (var (e2, t2, b2) in _world.Query<Transform, PhysicsBody>())
+            Vector2 pos1 = b1.Shape == ShapeType.Circle ? b1.GetCirPos(t1) : t1.Pos;
+            // var nearbyEntities = _grid.GetNeighbors(pos1);
+            var candidates = _grid.GetEntitiesInSameCell(t1.Pos);
+            foreach (var e2 in candidates)
             {
                 if (e1 == e2) continue;
+
+                var pair = e1.Value < e2.Value ? (e1, e2) : (e2, e1);
+                // if (!_checkedPairs.Add(pair)) continue;
+                // ref var t1 = ref _world.GetComponent<Transform>(e1);
+                // ref var b1 = ref _world.GetComponent<PhysicsBody>(e1);
+                ref var t2 = ref _world.GetComponent<Transform>(e2);
+                ref var b2 = ref _world.GetComponent<PhysicsBody>(e2);
+
                 if (b1.Type == PhysicsType.Kinmetic || b2.Type == PhysicsType.Kinmetic) continue;
                 if (!EntitiesCollide(t1, t2, b1, b2)) continue;
 
@@ -84,6 +108,30 @@ public class SimpleCollision : AbstractCollisionSystem
                 }
             }
         }
+        // foreach (var (e1, t1, b1) in _world.Query<Transform, PhysicsBody>())
+        // {
+        //     foreach (var (e2, t2, b2) in _world.Query<Transform, PhysicsBody>())
+        //     {
+        //         if (e1 == e2) continue;
+        //         if (b1.Type == PhysicsType.Kinmetic || b2.Type == PhysicsType.Kinmetic) continue;
+        //         if (!EntitiesCollide(t1, t2, b1, b2)) continue;
+
+        //         if (b1.Shape == ShapeType.Circle && b2.Shape != ShapeType.Circle)
+        //         {
+        //             ref var tRef = ref _world.GetComponent<Transform>(e1);
+        //             ref var mRef = ref _world.GetComponent<Movement>(e1);
+        //             CircleToRec(ref tRef, ref mRef, b1, t2, b2);
+        //         }
+        //         else if (b1.Shape == ShapeType.Circle && b2.Shape == ShapeType.Circle)
+        //         {
+        //             ref var t1Ref = ref _world.GetComponent<Transform>(e1);
+        //             ref var m1Ref = ref _world.GetComponent<Movement>(e1);
+        //             ref var t2Ref = ref _world.GetComponent<Transform>(e2);
+        //             ref var m2Ref = ref _world.GetComponent<Movement>(e2);
+        //             CircleToCircle(ref t1Ref, ref m1Ref, b1, ref t2Ref, ref m2Ref, b2);
+        //         }
+        //     }
+        // }
     }
 
     private void CircleToCircle(ref Transform t1, ref Movement m1, PhysicsBody b1, ref Transform t2, ref Movement m2, PhysicsBody b2)

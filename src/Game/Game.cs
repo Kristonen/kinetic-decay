@@ -41,6 +41,8 @@ namespace Game
         private CollisionPipeLine _collider;
         private InputSystem _input;
 
+        public SpatialGrid Grid;
+
         private bool _helper;
 
         public void InitGame()
@@ -61,23 +63,28 @@ namespace Game
             //         move.Dir = Utils.GetRandomDirection();
             //     }
             // };
-
+            float width = 1200;
+            float height = 800;
+            float thick = 50;
+            float x = 60;
+            float y = 10;
             var wall = _world.CreateEntity();
-            _world.AddComponent(wall, new Transform(1200, 500))
-                  .AddComponent(wall, new Rec(50, 500, Color.Orange))
-                  .AddComponent(wall, PhysicsBody.CreateRecBody(50, 500, 0, PhysicsType.Static));
+            _world.AddComponent(wall, new Transform(x, y))
+                  .AddComponent(wall, new Rec(width, thick, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(width, 50, 0, PhysicsType.Static));
             wall = _world.CreateEntity();
-            _world.AddComponent(wall, new Transform(700, 1000))
-                  .AddComponent(wall, new Rec(500, 50, Color.Orange))
-                  .AddComponent(wall, PhysicsBody.CreateRecBody(500, 50, 0, PhysicsType.Static));
+            _world.AddComponent(wall, new Transform(x - thick, y + thick))
+                  .AddComponent(wall, new Rec(thick, height , Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(thick, height, 0, PhysicsType.Static));
             wall = _world.CreateEntity();
-            _world.AddComponent(wall, new Transform(700, 450))
-                  .AddComponent(wall, new Rec(500, 50, Color.Orange))
-                  .AddComponent(wall, PhysicsBody.CreateRecBody(500, 50, 0, PhysicsType.Static));
+            _world.AddComponent(wall, new Transform(width + x, y + thick))
+                  .AddComponent(wall, new Rec(thick, height, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(thick, height, 0, PhysicsType.Static));
             wall = _world.CreateEntity();
-            _world.AddComponent(wall, new Transform(650, 500))
-                  .AddComponent(wall, new Rec(50, 500, Color.Orange))
-                  .AddComponent(wall, PhysicsBody.CreateRecBody(50, 500, 0, PhysicsType.Static));
+            _world.AddComponent(wall, new Transform(x, y + thick + height))
+                  .AddComponent(wall, new Rec(width, thick, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(width, thick, 0, PhysicsType.Static));
+
 
             while (!RL.WindowShouldClose())
             {
@@ -91,7 +98,7 @@ namespace Game
                     _world.AddComponent(sphere, new Transform(RL.GetMousePosition()))
                           .AddComponent(sphere, new Circle(20, Color.Red))
                           .AddComponent(sphere, new Sphere())
-                          .AddComponent(sphere, new Movement(Utils.GetRandomDirection(), 100))
+                          .AddComponent(sphere, new Movement(Utils.GetRandomDirection(), 500))
                           .AddComponent(sphere, PhysicsBody.CreateCircleBody(20, 0))
                           .AddComponent(sphere, new Timer(0, 2));
                     ref var timer = ref _world.GetComponent<Timer>(sphere);

@@ -9,7 +9,9 @@ public enum Input
 public class InputSystem
 {
     public Dictionary<Input, bool> Pressed { get => _pressed; set => _pressed = value; }
+    public float MouseWheel { get => _mouseWheel; set => _mouseWheel = value; }
     private Dictionary<Input, bool> _pressed;
+    private float _mouseWheel;
 
     public InputSystem()
     {
@@ -27,5 +29,7 @@ public class InputSystem
         _pressed[Input.Right] = RL.IsMouseButtonPressed(MouseButton.Right);
         _pressed[Input.F2] = RL.IsKeyPressed(KeyboardKey.F2);
         _pressed[Input.F5] = RL.IsKeyPressed(KeyboardKey.F5);
+
+        _mouseWheel = RL.GetMouseWheelMove();
     }
 }

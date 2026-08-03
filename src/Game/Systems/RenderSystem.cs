@@ -63,6 +63,12 @@ public class HelperRenderSystem : AbstractRenderSystem
             {
                 RL.DrawRectangleRec(body.GetRec(transform), new(200, 25, 200, 100));
             }
+
+            var grid = Game.GameState.Game.Grid;
+            foreach(var (key, value) in grid.Grid)
+            {
+                RL.DrawRectangleLinesEx(new(key.x * grid.CellSize, key.y * grid.CellSize, grid.CellSize, grid.CellSize), 5, Color.Red);
+            }
         }
     }
 }
