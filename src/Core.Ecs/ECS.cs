@@ -42,9 +42,10 @@ public class World
         return (ComponentPool<T>)pool;
     }
 
-    public void AddComponent<T>(EntityId entity, T component) where T : IComponent
+    public World AddComponent<T>(EntityId entity, T component) where T : IComponent
     {
         GetOrCreatePool<T>().Set(entity, component);
+        return this;
     }
 
     public ref T GetComponent<T>(EntityId entity) where T : IComponent

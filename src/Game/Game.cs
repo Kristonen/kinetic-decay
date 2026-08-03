@@ -26,6 +26,7 @@ namespace Game
             _renderer.Add(new HelperRenderSystem(_world));
             _updater = new();
             _updater.Add(new MovementSystem(_world));
+            _updater.Add(new TimerSystem(_world));
             _collider = new();
             _collider.Add(new SimpleCollision(_world));
         }
@@ -46,33 +47,49 @@ namespace Game
 
         public void GameLoop()
         {
-            var test = _world.CreateEntity();
-            _world.AddComponent(test, new Transform(200, 200));
-            _world.AddComponent(test, new Circle(50, Color.Red));
-            var body = PhysicsBody.CreateCircleBody(50, 0);
-            // _world.AddComponent(test, body);
-            // _world.AddComponent(test, new Movement { Dir = new(1, 1), Speed = 200 });
+            // .AddComponent(sphere, new Timer(0, 2));
+            // ref var timer = ref _world.GetComponent<Timer>(sphere);
+            // timer.TimeOut += (EntityId id) =>
+            // {
+            //     Console.WriteLine($"Entity {id}: Zeit ist abgelaufen");
+            //     if (_world.HasComponent<Movement>(id))
+            //     {
+            //         ref var move = ref _world.GetComponent<Movement>(id);
+            //         move.Dir = Utils.GetRandomDirection();
+            //     }
+            // };
 
-            var otherTest = _world.CreateEntity();
-            _world.AddComponent(otherTest, new Transform(800 ,500));
-            _world.AddComponent(otherTest, new Rec(250, 125, Color.Orange));
-            body = PhysicsBody.CreateCircleBody(30, 0);
-            body.Offset.X = 125;
-            body.Offset.Y = 62.5f;
-            _world.AddComponent(otherTest, body);
-
-            var nextTest = _world.CreateEntity();
-            _world.AddComponent(nextTest, new Transform(900, RL.GetScreenHeight()));
-            _world.AddComponent(nextTest, new Rec(100, 50, Color.Beige));
-            _world.AddComponent(nextTest, new Movement(new(0, -1), 200));
-            body = PhysicsBody.CreateRecBody(100, 50, 0);
-            _world.AddComponent(nextTest, body);
+            var wall = _world.CreateEntity();
+            _world.AddComponent(wall, new Transform(1200, 500))
+                  .AddComponent(wall, new Rec(50, 500, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(50, 500, 0, PhysicsType.Static));
+            wall = _world.CreateEntity();
+            _world.AddComponent(wall, new Transform(700, 1000))
+                  .AddComponent(wall, new Rec(500, 50, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(500, 50, 0, PhysicsType.Static));
+            wall = _world.CreateEntity();
+            _world.AddComponent(wall, new Transform(700, 450))
+                  .AddComponent(wall, new Rec(500, 50, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(500, 50, 0, PhysicsType.Static));
+            wall = _world.CreateEntity();
+            _world.AddComponent(wall, new Transform(650, 500))
+                  .AddComponent(wall, new Rec(50, 500, Color.Orange))
+                  .AddComponent(wall, PhysicsBody.CreateRecBody(50, 500, 0, PhysicsType.Static));
 
             while (!RL.WindowShouldClose())
             {
                 float dt = RL.GetFrameTime();
                 // Input
                 if (RL.IsKeyPressed(KeyboardKey.F2)) _helper = !_helper;
+                if (RL.IsMouseButtonPressed(MouseButton.Left))
+                {
+                    var sphere = _world.CreateEntity();
+                    _world.AddComponent(sphere, new Transform(RL.GetMousePosition()))
+                          .AddComponent(sphere, new Circle(20, Color.Red))
+                          .AddComponent(sphere, new Sphere())
+                          .AddComponent(sphere, new Movement(Utils.GetRandomDirection(), 100))
+                          .AddComponent(sphere, PhysicsBody.CreateCircleBody(20, 0));
+                }
                 // Update
                 _updater.Update(dt);
                 // Collision
