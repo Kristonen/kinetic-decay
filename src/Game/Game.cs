@@ -21,6 +21,7 @@ namespace Game
             InitGame();
 
             _world = new();
+            _input = new();
             _renderer = new();
             _renderer.Add(new RenderSystem(_world));
             _renderer.Add(new HelperRenderSystem(_world));
@@ -32,11 +33,13 @@ namespace Game
         }
 
         public bool Helper { get => _helper; set => _helper = value; }
+        public InputSystem InputSystem { get => _input; set => _input = value; }
 
         private World _world;
         private RenderPipeline _renderer;
         private UpdatePipeline _updater;
         private CollisionPipeLine _collider;
+        private InputSystem _input;
 
         private bool _helper;
 
@@ -80,16 +83,38 @@ namespace Game
             {
                 float dt = RL.GetFrameTime();
                 // Input
-                if (RL.IsKeyPressed(KeyboardKey.F2)) _helper = !_helper;
-                if (RL.IsMouseButtonPressed(MouseButton.Left))
+                _input.HandleInput();
+                if (_input.Pressed[Input.F2]) _helper = !_helper;
+                if (_input.Pressed[Input.Left])
                 {
                     var sphere = _world.CreateEntity();
                     _world.AddComponent(sphere, new Transform(RL.GetMousePosition()))
                           .AddComponent(sphere, new Circle(20, Color.Red))
                           .AddComponent(sphere, new Sphere())
                           .AddComponent(sphere, new Movement(Utils.GetRandomDirection(), 100))
-                          .AddComponent(sphere, PhysicsBody.CreateCircleBody(20, 0));
+                          .AddComponent(sphere, PhysicsBody.CreateCircleBody(20, 0))
+                          .AddComponent(sphere, new Timer(0, 2));
+                    ref var timer = ref _world.GetComponent<Timer>(sphere);
+                    timer.TimeOut += (EntityId id) =>
+                    {
+                        if (_world.HasComponent<Movement>(id))
+                        {
+                            ref var move = ref _world.GetComponent<Movement>(id);
+                            move.Dir = Utils.GetRandomDirection();
+                        }
+                    };
                 }
+                if (_input.Pressed[Input.Right])
+                {
+                    foreach (var (entityId, transform, circle) in _world.Query<Transform, Circle>())
+                    {
+                        if (RL.CheckCollisionPointCircle(RL.GetMousePosition(), transform.Pos, circle.Radius))
+                        {
+                            _world.DestroyEntity(entityId);
+                        }
+                    }
+                }
+                if (_input.Pressed[Input.F5]) Console.WriteLine("Test");
                 // Update
                 _updater.Update(dt);
                 // Collision
