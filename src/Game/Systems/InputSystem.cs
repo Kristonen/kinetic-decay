@@ -13,13 +13,12 @@ public class InputSystem
 
     public InputSystem()
     {
-        _pressed = new()
+        _pressed = new();
+        var values = Enum.GetValues<Input>().Cast<Input>();
+        foreach(var value in values)
         {
-            [Input.Left] = false,
-            [Input.Right] = false,
-            [Input.F2] = false,
-            [Input.F5] = false
-        };
+            _pressed[value] = false;
+        }
     }
 
     public void HandleInput()
